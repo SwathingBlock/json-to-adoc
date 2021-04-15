@@ -1,0 +1,13 @@
+[source, json]
+----
+{"command":"get_devices_by_gateway"}
+----
+=== Response
+[discrete]
+[cols="1,8", options="header"]
+|===
+|Field |Description
+|`command`
+|`String`, DESCRIPTION
+|===
+
