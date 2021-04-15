@@ -12,10 +12,18 @@ import com.google.gson.JsonObject;
 
 public class JsonPayload {
 
+	private String title;
+	private int depth;
 	private HashMap<String, ElementDetails> map = new HashMap<String, ElementDetails>();
 	private HashMap<String, JsonPayload> embeddedJsonObjects = new HashMap<String, JsonPayload>();
 	private HashMap<String, String> embeddedPrimativeJsonArrays = new HashMap<String, String>();
-	public JsonPayload(JsonObject json_obj) {
+	public JsonPayload(JsonObject json_obj, int _depth) {
+		this(json_obj, _depth, "");
+	}
+	
+	public JsonPayload(JsonObject json_obj, int _depth, String _title) {
+		this.title = _title;
+		this.depth = _depth;
 		parseJson(json_obj);
 	}
 	
@@ -25,22 +33,22 @@ public class JsonPayload {
 		for (String key : keySet) {
 			if(json_obj.get(key).isJsonPrimitive()) {
 				if(json_obj.get(key).getAsJsonPrimitive().isString()) {
-					map.put(key, ValueTypeEnum.STRING);
+					map.put(key, new ElementDetails(ValueTypeEnum.STRING));
 				}
 				else if(json_obj.get(key).getAsJsonPrimitive().isBoolean()) {
-					map.put(key, ValueTypeEnum.BOOLEAN);
+					map.put(key, new ElementDetails(ValueTypeEnum.BOOLEAN));
 				}
 				else if(json_obj.get(key).getAsJsonPrimitive().isNumber()) {
-					map.put(key, ValueTypeEnum.NUMBER);
+					map.put(key, new ElementDetails(ValueTypeEnum.NUMBER));
 				}
 			}
 			else if(json_obj.get(key).isJsonObject()) {
-				JsonPayload jsonPayload = new JsonPayload(json_obj.get(key).getAsJsonObject());
-				map.put(key, ValueTypeEnum.JSONOBJECT);
+				JsonPayload jsonPayload = new JsonPayload(json_obj.get(key).getAsJsonObject(),this.depth + 1,  "'" + key + "' Data Fields" );
+				map.put(key, new ElementDetails(ValueTypeEnum.JSONOBJECT));
 				embeddedJsonObjects.put(key, jsonPayload);
 			}
 			else if(json_obj.get(key).isJsonArray()) {
-				map.put(key, ValueTypeEnum.JSONARRAY);
+				map.put(key, new ElementDetails(ValueTypeEnum.JSONARRAY));
 				JsonArray json_array = json_obj.get(key).getAsJsonArray();
 				ArrayList<JsonElement> primatives = new ArrayList<JsonElement>();
 				for (JsonElement el : json_array) {
@@ -51,7 +59,7 @@ public class JsonPayload {
 				
 				if(primatives.size() != json_array.size()) {System.out.println("array contains primatives mixed with non primatives"); continue;}
 				embeddedPrimativeJsonArrays.put(key, Arrays.toString(primatives.toArray()));
-				
+				map.put(key, new ElementDetails(ValueTypeEnum.JSONARRAY, Arrays.toString(primatives.toArray())));
 //				if(json_array.get(0).isJsonObject()) {
 //					
 //				}
@@ -74,34 +82,35 @@ public class JsonPayload {
 		
 		StringBuilder builder = new StringBuilder();
 		
+		builder.append(new String(new char[this.depth]).replace("\0", "=") + " " + this.title + "\n");
 		builder.append("[discrete]\n");
 		builder.append("[cols=\"1,8\", options=\"header\"]\n");
 		builder.append("|===\n");
 		builder.append("|Field |Description\n");
 		
-		for(Map.Entry<String,Integer> entry : map.entrySet()) {
+		for(Map.Entry<String,ElementDetails> entry : map.entrySet()) {
 			String key = entry.getKey();
-			int value = entry.getValue();
+			ElementDetails details = entry.getValue();
 			
-			if(value == ValueTypeEnum.STRING) {
+			if(details.getType() == ValueTypeEnum.STRING) {
 					builder.append("|`" + key + "`\n");
-					builder.append("|`String`, DESCRIPTION\n");
+					builder.append("|`String`, " + details.getDescription() + "\n");
 			}
-			else if(value == ValueTypeEnum.BOOLEAN) {
+			else if(details.getType() == ValueTypeEnum.BOOLEAN) {
 				builder.append("|`" + key + "`\n");
-				builder.append("|`Boolean`, DESCRIPTION\n");
+				builder.append("|`Boolean`, " + details.getDescription() + "\n");
 			}
-			else if(value == ValueTypeEnum.NUMBER) {
+			else if(details.getType() == ValueTypeEnum.NUMBER) {
 				builder.append("|`" + key + "`\n");
-				builder.append("|`Number`, DESCRIPTION\n");
+				builder.append("|`Number`, " + details.getDescription() + "\n");
 			}
-			else if(value == ValueTypeEnum.JSONOBJECT) {
+			else if(details.getType() == ValueTypeEnum.JSONOBJECT) {
 				builder.append("|`" + key + "`\n");
-				builder.append("|`Json Object`, DESCRIPTION\n");
+				builder.append("|`Json Object`, " + details.getDescription() + "\n");
 			}
-			else if(value == ValueTypeEnum.JSONARRAY) {
+			else if(details.getType() == ValueTypeEnum.JSONARRAY) {
 				builder.append("|`" + key + "`\n");
-				builder.append("|`Json Array`, DESCRIPTION\n");
+				builder.append("|`Json Array`, " + details.getDescription() + "\n");
 			}
 		}
 		
