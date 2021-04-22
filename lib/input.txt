@@ -1,0 +1,1 @@
+{"deadband":0,"enabled":false,"facets":{"precision":"0","units":"%","min":"0","max":"100"},"highLimitEnabled":false,"highLimitValue":0,"lowLimitEnabled":false,"lowLimitValue":0,"pHandle":"14948","type":"num"}

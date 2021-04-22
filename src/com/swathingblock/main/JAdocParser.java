@@ -2,6 +2,7 @@ package com.swathingblock.main;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
@@ -14,7 +15,7 @@ import java.nio.file.WatchService;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class MyWatchService {
+public class JAdocParser {
 	
 	public static void start() throws IOException, InterruptedException {
 		final Path path = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
@@ -44,7 +45,7 @@ public class MyWatchService {
 						JsonParser parser = new JsonParser();
 						try {
 						JsonObject obj = parser.parse(resultStringBuilder.toString()).getAsJsonObject();
-						Controller.process(obj);
+						process(obj);
 						}
 						catch (Exception e) {
 							e.printStackTrace();
@@ -60,6 +61,29 @@ public class MyWatchService {
 			}
 		}
 		
+	}
+	
+	public static void process(JsonObject obj) {
+		JsonPayload jsonPayload = new JsonPayload(obj, 3, "Response");
+		String convertedJson = jsonPayload.convertJsonToAdocTable();
+		
+	     try {
+	    	FileWriter myWriter = new FileWriter("output.txt");
+			myWriter.write("");
+			myWriter.write("[source, json]\r\n" +"----\r\n");
+			myWriter.write(obj.toString());
+			myWriter.write("\r\n----\r\n");
+			myWriter.write(convertedJson);
+			myWriter.close();  
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	      
+		
+		System.out.println("[source, json]\r\n" +"----\r\n");
+		System.out.println(obj.toString());
+		System.out.println("\r\n----\r\n");
+		System.out.println(convertedJson);
 	}
 	
 }

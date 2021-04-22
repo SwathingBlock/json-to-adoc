@@ -1,0 +1,44 @@
+[source, json]
+----
+{"deadband":0,"enabled":false,"facets":{"precision":"0","units":"%","min":"0","max":"100"},"highLimitEnabled":false,"highLimitValue":0,"lowLimitEnabled":false,"lowLimitValue":0,"pHandle":"14948","type":"num"}
+----
+=== Response
+[discrete]
+[cols="1,8", options="header"]
+|===
+|Field |Description
+|`highLimitEnabled`
+|`Boolean`, DESCRIPTION
+|`deadband`
+|`Number`, DESCRIPTION
+|`pHandle`
+|`String`, DESCRIPTION
+|`highLimitValue`
+|`Number`, DESCRIPTION
+|`type`
+|`String`, DESCRIPTION
+|`enabled`
+|`Boolean`, DESCRIPTION
+|`lowLimitEnabled`
+|`Boolean`, DESCRIPTION
+|`facets`
+|`Json Object`, DESCRIPTION
+|`lowLimitValue`
+|`Number`, DESCRIPTION
+|===
+
+==== 'facets' Data Fields
+[discrete]
+[cols="1,8", options="header"]
+|===
+|Field |Description
+|`min`
+|`String`, DESCRIPTION
+|`max`
+|`String`, DESCRIPTION
+|`precision`
+|`String`, DESCRIPTION
+|`units`
+|`String`, DESCRIPTION
+|===
+
