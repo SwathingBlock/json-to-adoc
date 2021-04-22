@@ -1,1 +1,0 @@
-{"command": "get_devices_by_gateway"}
